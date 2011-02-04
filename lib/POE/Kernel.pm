@@ -1385,6 +1385,15 @@ sub has_forked {
 
   # reset some stuff for the signals
   $poe_kernel->_data_sig_has_forked;
+
+  # reset the trace FH
+  my $trace_filename = TRACE_FILENAME() if defined &TRACE_FILENAME;
+  if (defined $trace_filename) {
+    undef $trace_file_handle;
+    open $trace_file_handle, ">$trace_filename"
+        or die "can't open trace file `$trace_filename': $!";
+    CORE::select((CORE::select($trace_file_handle), $| = 1)[0]);
+  }
 }
 
 #------------------------------------------------------------------------------
